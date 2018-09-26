@@ -124,19 +124,21 @@ class Plugin {
    *
    * @private
    */
-  cachedResponseWillBeUsed({cacheName, cachedResponse}) {
+  async cachedResponseWillBeUsed({cacheName, cachedResponse}) {
     if (!cachedResponse) {
       return null;
     }
 
-    let isFresh = this._isResponseDateFresh(cachedResponse);
+  //  let isFresh = this._isResponseDateFresh(cachedResponse);
 
     // Expire entries to ensure that even if the expiration date has
     // expired, it'll only be used once.
     const cacheExpiration = this._getCacheExpiration(cacheName);
+    let isExpired = await cacheExpiration.isURLExpired(cachedResponse.url);
     cacheExpiration.expireEntries();
 
-    return isFresh ? cachedResponse : null;
+  //  return isFresh ? cachedResponse : null;
+      return isExpired ? null : cachedResponse;
   }
 
   /**
